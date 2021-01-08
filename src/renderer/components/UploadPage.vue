@@ -2,16 +2,42 @@
   <section class="index-page">
     <section class="uploader-container">
       <section class="title">Upload</section>
-      <section class="upload-box">
+      <section
+        class="upload-box"
+        :class="{ 'is-dragover': dragover }"
+        @click="onClickUpload"
+        @drop.prevent="onDrop"
+        @dragover.prevent="dragover = true"
+        @dragleave.prevent="dragover = false"
+      >
         <section class="icon"><i class="fas fa-upload"></i></section>
         <section class="text">Click to Upload</section>
+        <input type="file" id="file-uploader" @change="onChangeFile" multiple />
       </section>
       <section class="link-box">
         <section class="title">Link</section>
         <section class="links">
-          <section class="item" :class="idxChosen===1?'chosen':''" @click="onChosen(1)">Markdown</section>
-          <section class="item" :class="idxChosen===2?'chosen':''" @click="onChosen(2)">HTML</section>
-          <section class="item" :class="idxChosen===3?'chosen':''" @click="onChosen(3)">URL</section>
+          <section
+            class="item"
+            :class="idxChosen === 1 ? 'chosen' : ''"
+            @click="onChosen(1)"
+          >
+            Markdown
+          </section>
+          <section
+            class="item"
+            :class="idxChosen === 2 ? 'chosen' : ''"
+            @click="onChosen(2)"
+          >
+            HTML
+          </section>
+          <section
+            class="item"
+            :class="idxChosen === 3 ? 'chosen' : ''"
+            @click="onChosen(3)"
+          >
+            URL
+          </section>
         </section>
       </section>
     </section>
@@ -19,19 +45,33 @@
 </template>
 
 <script>
+import api from '../../api/oss'
 export default {
   name: "UploadPage",
   components: {},
   data() {
     return {
-      idxChosen:1
+      dragover: false,
+      idxChosen: 1,
     };
   },
-  mounted() {},
+  mounted() {
+  },
   methods: {
-    onChosen(idx){
-      this.idxChosen=idx
-    }
+    onChosen(idx) {
+      this.idxChosen = idx;
+    },
+    onClickUpload() {
+      document.getElementById("file-uploader").click();
+    },
+    onChangeFile(e) {
+      let files = e.target.files;
+      console.log('onChangeFile',files)
+       api.putUploadFiles(files)
+      //reset input value
+      document.getElementById("file-uploader").value = "";
+     
+    },
   },
 };
 </script>
@@ -78,8 +118,12 @@ export default {
       border-radius: 8px;
       transition: all 0.2s ease-in-out;
       cursor: pointer;
+      #file-uploader {
+        display: none;
+      }
     }
-    .upload-box:hover {
+    .upload-box:hover,
+    .upload-box.dragover {
       border: 2px dashed #a4d8fa;
       background-color: rgba(164, 216, 250, 0.3);
       color: #fff;
@@ -97,9 +141,9 @@ export default {
       }
       .links {
         display: flex;
-        
+
         color: #606266;
-        
+
         .item {
           padding: 12px 20px;
           line-height: 1;
@@ -115,14 +159,14 @@ export default {
           cursor: pointer;
           transition: all 0.3s cubic-bezier(0.645, 0.045, 0.355, 1);
         }
-        .item:first-child{
-          border-top-left-radius:14px;
-           border-bottom-left-radius:14px;
+        .item:first-child {
+          border-top-left-radius: 14px;
+          border-bottom-left-radius: 14px;
         }
-        .item:last-child{
-          border-top-right-radius:14px;
-          border-bottom-right-radius:14px;
-          border:transparent;
+        .item:last-child {
+          border-top-right-radius: 14px;
+          border-bottom-right-radius: 14px;
+          border: transparent;
         }
         .item:hover {
           color: #409eff;
